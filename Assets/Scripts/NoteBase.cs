@@ -7,6 +7,14 @@ public abstract class NoteBase : MonoBehaviour
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private ParticleSystem _hitParticles;
     private float _NoteSpeed;
+    public int NoteID;
+    public float NoteTiming;
+
+    // this WILL NOT WORK
+    protected NoteBase(int noteID, float noteTiming) {
+        NoteID = noteID;
+        NoteTiming = noteTiming;
+    } 
 
     private void Awake()
     {
