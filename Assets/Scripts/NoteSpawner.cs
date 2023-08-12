@@ -24,12 +24,12 @@ public class NoteSpawner : MonoBehaviour
     public void Update() {
         if (Input.GetKeyDown("i"))
         {
-            Debug.Log("Spawning left note.");
+            // Debug.Log("Spawning left note.");
             SpawnNote('l');
         }
         if (Input.GetKeyDown("o"))
         {
-            Debug.Log("Spawning right note.");
+            // Debug.Log("Spawning right note.");
             SpawnNote('r');
         }
     }
