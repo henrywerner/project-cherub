@@ -12,6 +12,8 @@ public class NoteSpawner : MonoBehaviour
     [SerializeField] private GameObject _RightSpawnpoint;
     [SerializeField] private GameObject _NoteParent;
 
+    private int _nextNoteId = 0;
+
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -25,24 +27,32 @@ public class NoteSpawner : MonoBehaviour
         if (Input.GetKeyDown("i"))
         {
             // Debug.Log("Spawning left note.");
-            SpawnNote(0);
+            SpawnNote(0, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration);
         }
         if (Input.GetKeyDown("o"))
         {
             // Debug.Log("Spawning right note.");
-            SpawnNote(1);
+            SpawnNote(1, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration);
         }
     }
 
-    public void SpawnNote(int side) {
+    public void SpawnNote(int side, float timing) {
         // type - normal, hold, swipe, etc.
         // side - L, R
 
         // TODO: Change this!
         if (side == 0) {
-            Instantiate(_LeftNote, _LeftSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
+            GameObject newNote = Instantiate(_LeftNote, _LeftSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
+            NoteBase nb = newNote.GetComponent<NoteBase>();
+            nb.NoteID = _nextNoteId;
+            nb.NoteTiming = timing;
+            _nextNoteId++;
         } else {
-            Instantiate(_RightNote, _RightSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
+            GameObject newNote = Instantiate(_RightNote, _RightSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
+            NoteBase nb = newNote.GetComponent<NoteBase>();
+            nb.NoteID = _nextNoteId;
+            nb.NoteTiming = timing;
+            _nextNoteId++;
         }
     }
 }

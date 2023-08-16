@@ -33,7 +33,7 @@ public class JudgementLine : MonoBehaviour
 
         void DrawFunnyRaycast(Color color, String debugText) {
             Debug.DrawRay(t.position, t.TransformDirection(Vector3.forward) * maxRaycastDistance, color);
-            Debug.Log("🎵 " + debugText);
+            // Debug.Log("🎵 " + debugText);
         }
         
         if (Physics.Raycast(ray, out hit, maxRaycastDistance, targetLayer))
