@@ -26,11 +26,18 @@ public class Conductor : MonoBehaviour
     public float firstBeatOffset;
 
     //an AudioSource attached to this GameObject that will play the music.
-    private AudioSource musicSource;
+    private AudioSource _musicSource;
 
     // NEW! Control the speed that all notes travel 
     [Range(0.0f, 100.0f)]
     public float noteSpeed;
+
+    private const float HIGHWAY_LENGTH = 30f; // the distance of the highway
+
+    // How long it takes for a note to travel from it's spawn point to the judgment line
+    public float highwayTripDuration => HIGHWAY_LENGTH / noteSpeed;
+    public float highwayTripDurationInBeats => highwayTripDuration / secPerBeat;
+
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -43,7 +50,7 @@ public class Conductor : MonoBehaviour
     void Start()
     {
         //Load the AudioSource attached to the Conductor GameObject
-        musicSource = GetComponent<AudioSource>();
+        _musicSource = GetComponent<AudioSource>();
 
         //Calculate the number of seconds in each beat
         secPerBeat = 60f / songBpm;
@@ -52,7 +59,7 @@ public class Conductor : MonoBehaviour
         dspSongTime = (float)AudioSettings.dspTime;
 
         //Start the music
-        musicSource.Play();
+        _musicSource.Play();
     }
 
     void Update()

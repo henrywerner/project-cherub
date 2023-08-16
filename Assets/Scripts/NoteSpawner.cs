@@ -25,21 +25,21 @@ public class NoteSpawner : MonoBehaviour
         if (Input.GetKeyDown("i"))
         {
             // Debug.Log("Spawning left note.");
-            SpawnNote('l');
+            SpawnNote(0);
         }
         if (Input.GetKeyDown("o"))
         {
             // Debug.Log("Spawning right note.");
-            SpawnNote('r');
+            SpawnNote(1);
         }
     }
 
-    public void SpawnNote(char side) {
+    public void SpawnNote(int side) {
         // type - normal, hold, swipe, etc.
         // side - L, R
 
         // TODO: Change this!
-        if (side == 'l') {
+        if (side == 0) {
             Instantiate(_LeftNote, _LeftSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
         } else {
             Instantiate(_RightNote, _RightSpawnpoint.transform.position, Quaternion.identity, _NoteParent.transform);
