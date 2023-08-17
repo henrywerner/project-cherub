@@ -30,8 +30,13 @@ public abstract class NoteBase : MonoBehaviour, INote
     }
 
     protected virtual void Movement(Rigidbody rb) {
-        Vector3 moveOffset = -transform.forward * _NoteSpeed * Time.deltaTime;
-        rb.MovePosition(rb.position + moveOffset);
+        Vector3 newPos = rb.position;
+        float beatDelta = NoteTiming - Conductor.Instance.songPositionInBeats;
+        float distanceInHighways = _NoteSpeed * beatDelta; // (Beats per Highway) * (Beats) = distance in "highways"
+        float highwayRatio = 30f / Conductor.Instance.highwayLength; // WARNING: The 30f is hardcoded and it shouldn't be
+        newPos.z = distanceInHighways * highwayRatio; // convert from theoretical highways to physical units 
+
+        rb.position = newPos;
     }
 
     public void SetInRange(bool inRange) {
@@ -44,7 +49,7 @@ public abstract class NoteBase : MonoBehaviour, INote
 
     public void Hit() {
         // Call ScoreKeeper
-        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPosition);
+        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
         
         HitAction();
     }
@@ -52,7 +57,7 @@ public abstract class NoteBase : MonoBehaviour, INote
     public void Miss()
     {
         // Call ScoreKeeper
-        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPosition);
+        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
 
         MissAction();
     }

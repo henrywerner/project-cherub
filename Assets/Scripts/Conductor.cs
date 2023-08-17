@@ -1,42 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 
 public class Conductor : MonoBehaviour
 {
     public static Conductor Instance { get; private set; }
 
-    //Song beats per minute
-    //This is determined by the song you're trying to sync up to
-    public float songBpm;
+    public float songBpm; // Don't forget to change this for each song    
+    public float secPerBeat; // The number of seconds for each song beat
+    public float beatsPerSec; 
+    public float songPosition; // Current song position, in seconds
+    public float songPositionInBeats; // Current song position, in beats
+    public float dspSongTime; // Seconds passed since the song started
+    public float firstBeatOffset; //The offset to the first beat of the song in seconds
+    private AudioSource _musicSource; // AudioSource attached to this GameObject that plays music.
 
-    //The number of seconds for each song beat
-    public float secPerBeat;
+    [Range(0.1f, 2.0f)]
+    public float highwayLengthModifier;
+    private const float HIGHWAY_TRUE_LENGTH = 30f; // length of highway in world units
+    public float highwayLength { get; private set; }
 
-    //Current song position, in seconds
-    public float songPosition;
-
-    //Current song position, in beats
-    public float songPositionInBeats;
-
-    //How many seconds have passed since the song started
-    public float dspSongTime;
-
-    //The offset to the first beat of the song in seconds
-    public float firstBeatOffset;
-
-    //an AudioSource attached to this GameObject that will play the music.
-    private AudioSource _musicSource;
-
-    // NEW! Control the speed that all notes travel 
-    [Range(0.0f, 100.0f)]
-    public float noteSpeed;
-
-    private const float HIGHWAY_LENGTH = 30f; // the distance of the highway
+    [Range(0.0f, 10.0f)]
+    [SerializeField] private float noteSpeedModifier = 1.0f;
+    public float noteSpeed = 0.2f; // Starts in Units per Second. Becomes Highways per beat in Start()
 
     // How long it takes for a note to travel from it's spawn point to the judgment line
-    public float highwayTripDuration => HIGHWAY_LENGTH / noteSpeed;
-    public float highwayTripDurationInBeats => highwayTripDuration / secPerBeat;
+    public float highwayTripDurationInBeats => highwayLength / noteSpeed;
+    public float highwayTripDuration => highwayTripDurationInBeats / beatsPerSec;
+
+    private bool _isSongStarted = false;
 
 
     private void Awake() {
@@ -45,25 +38,53 @@ public class Conductor : MonoBehaviour
         } else {
             Instance = this;
         }
+
+        // TODO: This is a hack and needs a real solution
+        // The songPos is 0 by default, which means that all early notes spawn at once inside each other.
+        // So I just set it at -99 until we define it later as the highway duration.
+        songPosition = -99; 
+        songPositionInBeats = -99;
+
+        // Calculate the number of seconds in each beat
+        secPerBeat = 60f / songBpm;
+        beatsPerSec = songBpm / 60f;
+
+        // Set speed vars
+        highwayLength = HIGHWAY_TRUE_LENGTH * highwayLengthModifier;
+        noteSpeed *= noteSpeedModifier * highwayLength; // note speed in Highways Per Second
+        noteSpeed *= secPerBeat; // convert to Highways per Beat (H/b)
+
+        firstBeatOffset = highwayTripDuration;
     }
 
     void Start()
     {
-        //Load the AudioSource attached to the Conductor GameObject
+        // Load the AudioSource attached to the Conductor GameObject
         _musicSource = GetComponent<AudioSource>();
 
-        //Calculate the number of seconds in each beat
-        secPerBeat = 60f / songBpm;
+        StartCoroutine(StartingCountdown(3f));
+    }
 
-        //Record the time when the music starts
-        dspSongTime = (float)AudioSettings.dspTime;
+    IEnumerator StartingCountdown(float additionRtDelay) {
+        yield return new WaitForSecondsRealtime(additionRtDelay);
 
-        //Start the music
+        dspSongTime = (float)AudioSettings.dspTime; // record the time when the music starts
+        _musicSource.mute = true; // mute it at first
         _musicSource.Play();
+
+        _isSongStarted = true; // start counting the beats in
+
+        // FIXME: THIS SOLUTION SUCKS!!! THERE NEEDS TO BE A BETTER WAY!!!
+        yield return new WaitForSecondsRealtime(highwayTripDuration);
+
+        _musicSource.mute = false; // un-mute it
+        _musicSource.Play(); // restart the track?
     }
 
     void Update()
     {
+        if (!_isSongStarted) return;
+
         //determine how many seconds since the song started
         //(also account for first beat offset)
         songPosition = (float)(AudioSettings.dspTime - dspSongTime - firstBeatOffset);

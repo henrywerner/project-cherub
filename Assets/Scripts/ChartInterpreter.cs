@@ -19,6 +19,8 @@ public class ChartInterpreter : MonoBehaviour
     [SerializeField] private int _noteBufferMaxSize = 300; // maximum size the buffer can be
     [SerializeField] private int _noteBufferChunkSize = 50; // amount of notes to load into buffer at a time
 
+    private Conductor m_Conductor;
+
     private void Awake() {
         // Singleton logic
         if (Instance != null && Instance != this) {
@@ -29,6 +31,8 @@ public class ChartInterpreter : MonoBehaviour
     }
 
     private void Start() {
+        m_Conductor = Conductor.Instance;
+
         // Load chart (maybe move this somewhere else?)
         LoadChartFromFile(ChartFilename);
         LoadChunkToBuffer();
@@ -40,11 +44,11 @@ public class ChartInterpreter : MonoBehaviour
 
         Note nextUp = _noteBuffer.Peek(); // I would love to use try peek
 
-        float currentBeat = Conductor.Instance.songPositionInBeats;
+        float currentBeat = m_Conductor.songPositionInBeats + m_Conductor.highwayTripDurationInBeats;
 
         while (nextUp.b <= currentBeat) { // TODO: this might need leeway
             // Spawn current note
-            NoteSpawner.Instance.SpawnNote(nextUp.l, nextUp.b * Conductor.Instance.secPerBeat); // FIXME: this sucks
+            NoteSpawner.Instance.SpawnNote(nextUp.l, nextUp.b); // FIXME: this sucks
             _noteBuffer.Dequeue();
 
             if (_noteBuffer.Count >= 1) {
