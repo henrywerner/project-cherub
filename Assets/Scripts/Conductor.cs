@@ -29,7 +29,11 @@ public class Conductor : MonoBehaviour
     public float highwayTripDurationInBeats => highwayLength / noteSpeed;
     public float highwayTripDuration => highwayTripDurationInBeats / beatsPerSec;
 
+    [Header("Song Play Statuses")]
     private bool _isSongStarted = false;
+    public float songBeatDuration { get; private set; }
+    public float songSecDuration => songBeatDuration / beatsPerSec;
+
 
 
     private void Awake() {
@@ -62,7 +66,10 @@ public class Conductor : MonoBehaviour
         // Load the AudioSource attached to the Conductor GameObject
         _musicSource = GetComponent<AudioSource>();
 
-        StartCoroutine(StartingCountdown(3f));
+        // Set the song duration
+        songBeatDuration = ChartInterpreter.Instance.GetSongDuration();
+
+        StartCoroutine(StartingCountdown(1f));
     }
 
     IEnumerator StartingCountdown(float additionRtDelay) {
@@ -84,6 +91,14 @@ public class Conductor : MonoBehaviour
     void Update()
     {
         if (!_isSongStarted) return;
+
+        if (songPositionInBeats >= songBeatDuration) {
+            /* Trigger song ending event */
+            Debug.Log("Song End Reached: " + songPositionInBeats + " beats out of " + songBeatDuration);
+            _isSongStarted = false; // TEMP - i'm just pausing the song timer
+            _musicSource.mute = true; // fade out music if music is still playing
+            return;
+        }
 
         //determine how many seconds since the song started
         //(also account for first beat offset)

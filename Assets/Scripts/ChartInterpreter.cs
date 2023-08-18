@@ -28,14 +28,14 @@ public class ChartInterpreter : MonoBehaviour
         } else {
             Instance = this;
         }
-    }
-
-    private void Start() {
-        m_Conductor = Conductor.Instance;
 
         // Load chart (maybe move this somewhere else?)
         LoadChartFromFile(ChartFilename);
         LoadChunkToBuffer();
+    }
+
+    private void Start() {
+        m_Conductor = Conductor.Instance;
     }
 
     private void Update() {
@@ -100,6 +100,10 @@ public class ChartInterpreter : MonoBehaviour
         } else {
             Debug.Log("🔴 Chart not loaded");
         }
+    }
+
+    public float GetSongDuration() {
+        return _chart.songend;
     }
 }
 

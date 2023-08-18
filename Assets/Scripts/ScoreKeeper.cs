@@ -5,9 +5,14 @@ using UnityEngine;
 public class ScoreKeeper : MonoBehaviour
 {
     public static ScoreKeeper Instance { get; private set; }
-    public int NotesHit { get; private set; }
-    public int NotesMissed { get; private set; }
     public int TotalNotes { get; private set; }
+    public int NotesMissed { get; private set; }
+    public int NotesHit { get; private set; }
+    public int PerfectPlusHits { get; private set; }
+    public int PerfectHits { get; private set; }
+    public int GreatHits { get; private set; }
+    public int GoodHits { get; private set; }
+    public int OkayHits { get; private set; }
     public float SongAccuracy {
         get {
             if (TotalNotes == 0)
@@ -18,10 +23,13 @@ public class ScoreKeeper : MonoBehaviour
         }
     }
     public int SongScore { get; private set; } //TODO: add scoring
-    public bool IsFullCombo => NotesMissed > 0;
+    public bool IsFullCombo => !(NotesMissed > 0);
 
     // there's definitely a better way
     private Queue<NoteLog> _noteHistory = new Queue<NoteLog>();
+
+
+
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -35,6 +43,11 @@ public class ScoreKeeper : MonoBehaviour
         NotesHit = 0;
         NotesMissed = 0;
         SongScore = 0;
+        PerfectPlusHits = 0;
+        PerfectHits = 0;
+        GreatHits = 0;
+        GoodHits = 0;
+        OkayHits = 0;
     }
 
     public void JudgeNote(int noteID, float noteTiming, float hitTiming) {
@@ -54,25 +67,30 @@ public class ScoreKeeper : MonoBehaviour
             case float d when d <= FRAME_DURATION * 1f:
                 // super secret ultra perfect
                 currentNote.Judgement = 5;
+                PerfectPlusHits++;
                 break;
             case float d when d <= FRAME_DURATION * 3f:
                 // perfect
                 currentNote.Judgement = 4;
+                PerfectHits++;
                 break;
             case float d when d <= FRAME_DURATION * 5f:
                 // great
                 currentNote.Judgement = 3;
+                GreatHits++;
                 break;
             case float d when d <= FRAME_DURATION * 9f:
                 // good
                 currentNote.Judgement = 2;
+                GoodHits++;
                 break;
             case float d when d <= FRAME_DURATION * 14f:
                 // okay
                 currentNote.Judgement = 1;
+                OkayHits++;
                 break;
             default:
-                // miss?
+                // miss
                 currentNote.Judgement = 0;
                 break;
         }

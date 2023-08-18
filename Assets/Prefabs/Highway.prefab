@@ -190,7 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GunLeft: {fileID: 532770892}
   GunRight: {fileID: 1075802365}
-  maxRaycastDistance: 5
+  maxRaycastDistance: 7
   targetLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -349,7 +349,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.75, y: 5, z: 2}
+  m_Size: {x: 0.75, y: 5, z: 3}
   m_Center: {x: 0, y: 2.55, z: 0}
 --- !u!54 &1587273230786088624
 Rigidbody:
