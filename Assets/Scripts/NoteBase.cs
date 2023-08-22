@@ -12,10 +12,11 @@ public abstract class NoteBase : MonoBehaviour, INote
     public bool IsInRange = false;
 
     // this WILL NOT WORK
-    protected NoteBase(int noteID, float noteTiming) {
+    protected NoteBase(int noteID, float noteTiming)
+    {
         NoteID = noteID;
         NoteTiming = noteTiming;
-    } 
+    }
 
     private void Awake()
     {
@@ -25,11 +26,13 @@ public abstract class NoteBase : MonoBehaviour, INote
         _NoteSpeed = Conductor.Instance.noteSpeed;
     }
 
-    private void Update() {
+    private void Update()
+    {
         Movement(_rb);
     }
 
-    protected virtual void Movement(Rigidbody rb) {
+    protected virtual void Movement(Rigidbody rb)
+    {
         Vector3 newPos = rb.position;
         float beatDelta = NoteTiming - Conductor.Instance.songPositionInBeats;
         float distanceInHighways = _NoteSpeed * beatDelta; // (Beats per Highway) * (Beats) = distance in "highways"
@@ -39,44 +42,49 @@ public abstract class NoteBase : MonoBehaviour, INote
         rb.position = newPos;
     }
 
-    public void SetInRange(bool inRange) {
+    public void SetInRange(bool inRange)
+    {
         IsInRange = inRange;
     }
 
-    public bool GetInRange() {
+    public bool GetInRange()
+    {
         return IsInRange;
     }
 
-    public void Hit() {
-        // Call ScoreKeeper
-        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
-        
-        HitAction();
+    public void Hit(int lane)
+    {
+        // "lane" lets the note know which button is was hit by. Needed for multi-button notes.
+        HitAction(lane);
     }
 
     public void Miss()
     {
-        // Call ScoreKeeper
-        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
-
         MissAction();
     }
 
-    protected virtual void HitAction() {
-        // play note hit animation
-
-        // play hit effects
-        HitFeedback();
-        // hide note
-        gameObject.SetActive(false);
+    protected virtual void HitAction(int lane)
+    {
+        JudgeNote();
+        HitFeedback(); // play hit effects
+        gameObject.SetActive(false); // hide note
     }
 
-    protected virtual void MissAction() {
+    protected virtual void MissAction()
+    {
+        JudgeNote();
         MissFeedback();
         gameObject.SetActive(false);
     }
 
-    private void HitFeedback() {
+    private void JudgeNote()
+    {
+        // Call ScoreKeeper
+        ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
+    }
+
+    protected void HitFeedback()
+    {
         if (_hitParticles != null)
         {
             _hitParticles = Instantiate(_hitParticles, transform.position, Quaternion.identity);
@@ -87,7 +95,8 @@ public abstract class NoteBase : MonoBehaviour, INote
         Destroy(gameObject); // Delete note
     }
 
-    private void MissFeedback() {
+    private void MissFeedback()
+    {
         if (_missParticles != null)
         {
             _missParticles = Instantiate(_hitParticles, transform.position, Quaternion.identity);

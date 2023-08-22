@@ -61,7 +61,7 @@ public class ScoreKeeper : MonoBehaviour
 
         float timingDeltaInBeats = Mathf.Abs(hitTiming - noteTiming);
         float timingDelta = timingDeltaInBeats / Conductor.Instance.beatsPerSec;
-        Debug.Log("note | timing delta: " + timingDelta);
+        // Debug.Log("note | timing delta: " + timingDelta);
 
         switch (timingDelta) {
             case float d when d <= FRAME_DURATION * 1f:
@@ -103,10 +103,7 @@ public class ScoreKeeper : MonoBehaviour
         }
 
         // Display judgment hud action
-        // TODO: use event listener pattern
         UIEvents.current.ShowJudgement(currentNote.Judgement);
-        string[] judgments = new string[] {"miss", "okay", "good", "great", "perfect", "perfect+"};
-        // Debug.Log("Note " + noteID + " Judged: " + judgments[currentNote.Judgement] + " " + currentNote.Judgement);
 
         // Add to note history
         _noteHistory.Enqueue(currentNote);

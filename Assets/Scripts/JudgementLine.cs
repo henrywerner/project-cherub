@@ -19,14 +19,15 @@ public class JudgementLine : MonoBehaviour
     }
 
     public void TapLeft() {
-        Tap(GunLeft);
+        Tap(GunLeft, 0);
     }
 
     public void TapRight() {
-        Tap(GunRight);
+        Tap(GunRight, 1);
     }
 
-    private void Tap(Transform t) {
+    // laneID - tells the note which lane it was hit from
+    private void Tap(Transform t, int laneID) {
         // Using raycasts is such a 200iq move
         RaycastHit hit;
         Ray ray = new Ray(t.position, t.TransformDirection(Vector3.forward));
@@ -41,7 +42,7 @@ public class JudgementLine : MonoBehaviour
             // Get the note using the note interface
             INote note = hit.collider.gameObject.GetComponent<INote>();
             if ((bool)(note?.GetInRange())) { // the '?.' function returns type "bool?" LMAO
-                note.Hit();
+                note.Hit(laneID);
                 DrawFunnyRaycast(Color.green, "Note hit");
             } else {
                 DrawFunnyRaycast(Color.yellow, "Note out of range");

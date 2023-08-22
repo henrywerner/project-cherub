@@ -48,7 +48,7 @@ public class ChartInterpreter : MonoBehaviour
 
         while (nextUp.b <= currentBeat) { // TODO: this might need leeway
             // Spawn current note
-            NoteSpawner.Instance.SpawnNote(nextUp.l, nextUp.b); // FIXME: this sucks
+            NoteSpawner.Instance.SpawnNote(nextUp.h, nextUp.l, nextUp.b, nextUp.t); // FIXME: this sucks
             _noteBuffer.Dequeue();
 
             if (_noteBuffer.Count >= 1) {

@@ -44,7 +44,6 @@ public class InputEvents_DRAFT : MonoBehaviour
     public void SwitchLanePressed(bool l, bool r)
     {
         OnSwitchLanePressed?.Invoke(l, r);
-        Debug.Log("switch lane pressed");
     }
 
     public event Action<bool, bool> OnSwitchLaneReleased;
@@ -52,6 +51,5 @@ public class InputEvents_DRAFT : MonoBehaviour
     public void SwitchLaneReleased(bool l, bool r)
     {
         OnSwitchLaneReleased?.Invoke(l, r);
-        Debug.Log("switch lane released");
     }
 }
