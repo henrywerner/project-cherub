@@ -66,8 +66,6 @@ public abstract class HighwaySelectedState : IState
         _indicator.transform.position = _indicatorTargetTrans.position;
         _indicator.transform.rotation = _indicatorTargetTrans.rotation;
 
-
-        // TODO: THIS WILL NOT WORK BECAUSE NOT A MONO!!!!!!!
         InputEvents_DRAFT.current.OnTapLeft += TapLeft;
         InputEvents_DRAFT.current.OnTapRight += TapRight;
         InputEvents_DRAFT.current.OnSwitchLanePressed += ButtonPressed;

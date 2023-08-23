@@ -59,6 +59,14 @@ public class InputHandler : MonoBehaviour
         {
             InputEvents_DRAFT.current.TapRight();
         }
+        if (releaseBlue)
+        {
+            InputEvents_DRAFT.current.ReleaseLeft();
+        }
+        if (releaseRed)
+        {
+            InputEvents_DRAFT.current.ReleaseRight();
+        }
     }
 
     private void DetermineLane()

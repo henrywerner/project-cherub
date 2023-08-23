@@ -46,7 +46,9 @@ public class ChartInterpreter : MonoBehaviour
 
         float currentBeat = m_Conductor.songPositionInBeats + m_Conductor.highwayTripDurationInBeats;
 
-        while (nextUp.b <= currentBeat) { // TODO: this might need leeway
+        while (nextUp.b <= currentBeat) {
+            // TODO: Add an actual way to read hold notes and hold children!!!
+
             // Spawn current note
             NoteSpawner.Instance.SpawnNote(nextUp.h, nextUp.l, nextUp.b, nextUp.t); // FIXME: this sucks
             _noteBuffer.Dequeue();

@@ -45,7 +45,7 @@ public class NoteMulti : NoteBase
 
             HitFeedback();
 
-            gameObject.SetActive(false); // do I even need this if HitFeedback() destroys the note?
+            Destroy(gameObject); // Delete note
         }
     }
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public abstract class NoteBase : MonoBehaviour, INote
 {
-    [SerializeField] private Rigidbody _rb;
+    [SerializeField] protected Rigidbody _rb;
     [SerializeField] private ParticleSystem _hitParticles, _missParticles;
-    private float _NoteSpeed;
+    protected float _NoteSpeed;
     public int NoteID;
     public float NoteTiming;
     public bool IsInRange = false;
@@ -68,6 +68,7 @@ public abstract class NoteBase : MonoBehaviour, INote
         JudgeNote();
         HitFeedback(); // play hit effects
         gameObject.SetActive(false); // hide note
+        Destroy(gameObject); // Delete note
     }
 
     protected virtual void MissAction()
@@ -75,9 +76,10 @@ public abstract class NoteBase : MonoBehaviour, INote
         JudgeNote();
         MissFeedback();
         gameObject.SetActive(false);
+        Destroy(gameObject); // Delete note
     }
 
-    private void JudgeNote()
+    protected void JudgeNote()
     {
         // Call ScoreKeeper
         ScoreKeeper.Instance.JudgeNote(NoteID, NoteTiming, Conductor.Instance.songPositionInBeats);
@@ -91,8 +93,6 @@ public abstract class NoteBase : MonoBehaviour, INote
             _hitParticles.gameObject.SetActive(true);
             //print("Hit Particles: " + _hitParticles.transform.rotation.eulerAngles);
         }
-
-        Destroy(gameObject); // Delete note
     }
 
     private void MissFeedback()
@@ -102,8 +102,6 @@ public abstract class NoteBase : MonoBehaviour, INote
             _missParticles = Instantiate(_hitParticles, transform.position, Quaternion.identity);
             _missParticles.gameObject.SetActive(true);
         }
-
-        Destroy(gameObject); // Delete note
     }
 
 }

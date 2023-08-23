@@ -32,11 +32,25 @@ public class InputEvents_DRAFT : MonoBehaviour
         OnTapLeft?.Invoke();
     }
 
+    public event Action OnReleaseLeft;
+
+    public void ReleaseLeft()
+    {
+        OnReleaseLeft?.Invoke();
+    }
+
     public event Action OnTapRight;
 
     public void TapRight()
     {
         OnTapRight?.Invoke();
+    }
+
+    public event Action OnReleaseRight;
+
+    public void ReleaseRight()
+    {
+        OnReleaseRight?.Invoke();
     }
 
     public event Action<bool, bool> OnSwitchLanePressed;
