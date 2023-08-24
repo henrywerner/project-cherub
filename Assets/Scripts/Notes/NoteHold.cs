@@ -4,21 +4,36 @@ using UnityEngine;
 
 public class NoteHold : NoteBase
 {
+    [SerializeField] private HoldTrailGenerator trailGenerator;
     public float releaseTarget;
-    private HoldTrailGenerator trailGenerator;
+    private NoteChild[] _children;
+
+    private bool _isCurrentlyHeld = false;
 
     public NoteHold(int noteID, float noteTiming) : base(noteID, noteTiming)
     {
     }
 
+    public void SetChildren(NoteChild[] children)
+    {
+        _children = children;
+
+        if (children.Length > 0)
+        {
+            // set release target to the beat timing of the last child
+            releaseTarget = children[children.Length - 1].b;
+        }
+    }
+
     void Start()
     {
-        trailGenerator = gameObject.GetComponent<HoldTrailGenerator>();
+        // trailGenerator = gameObject.GetComponent<HoldTrailGenerator>();
     }
 
     private void Update()
     {
-        Movement(_rb);
+        if (!_isCurrentlyHeld) Movement(_rb);
+
         UpdateTrailGeneration();
     }
 
@@ -45,6 +60,8 @@ public class NoteHold : NoteBase
 
     protected override void HitAction(int lane) 
     {
+        _isCurrentlyHeld = true;
+
         JudgeNote(); // Judge the initial hit as a complete note
 
         HitFeedback(); // Play standard hit feedback for initial impact. (Change later?)
@@ -105,6 +122,8 @@ public class NoteHold : NoteBase
                 // TODO: make sure this only effects EARLY releases. Holding too long shouldn't be punished.
                 break;
         }
+
+        _isCurrentlyHeld = false;
     }
 
     private void ReleaseFailAction()

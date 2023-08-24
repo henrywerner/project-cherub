@@ -264,6 +264,13 @@ MonoBehaviour:
   _LeftNote: {fileID: 5480009699057510108, guid: 27768d8348dc43f4d9e7a0eb5396eb4c, type: 3}
   _RightNote: {fileID: 4178764108257900398, guid: d6e76ce2cbf027b4a8cbc1d05e34b4aa, type: 3}
   _MultiNote: {fileID: 4178764108257900398, guid: 065b5af7f8f32124f819e6c6ea6404f2, type: 3}
+  _LeftNoteHold: {fileID: 5480009699057510108, guid: 273dffbe774eefd4da0325365d6fcedb, type: 3}
+  _RightNoteHold: {fileID: 5480009699057510108, guid: 099bb4b33c794f64aa0a8d76869e488b, type: 3}
+  _MultiNoteHold: {fileID: 0}
+  _LeftNoteFlick: {fileID: 0}
+  _RightNoteFlick: {fileID: 0}
+  _MultiNoteFlick: {fileID: 0}
+  _HiddenNote: {fileID: 0}
   _centerHwBlueSpawnpoint: {fileID: 869247374}
   _centerHwRedSpawnpoint: {fileID: 1111636800}
   _centerHwPurpleSpawnpoint: {fileID: 912181110}
@@ -1789,8 +1796,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1398664152efceb4c83910d1541a2ba8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxLength: 0
+  impactPoint: 0
   tailLength: 10
-  tailWidth: 1
 --- !u!23 &769426484
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2781,7 +2789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ChartFilename: test_chart
-  chartFile: {fileID: 4900000, guid: e4aceb006ac14d347aed4a7a630040a8, type: 3}
+  chartFile: {fileID: 4900000, guid: 56339d3f8eb05d44aa423032ddebccf4, type: 3}
   _noteBufferMaxSize: 300
   _noteBufferChunkSize: 50
 --- !u!1 &1603523675

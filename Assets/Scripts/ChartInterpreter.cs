@@ -50,7 +50,8 @@ public class ChartInterpreter : MonoBehaviour
             // TODO: Add an actual way to read hold notes and hold children!!!
 
             // Spawn current note
-            NoteSpawner.Instance.SpawnNote(nextUp.h, nextUp.l, nextUp.b, nextUp.t); // FIXME: this sucks
+            // NoteSpawner.Instance.SpawnTapNote(nextUp.h, nextUp.l, nextUp.b, nextUp.t); // FIXME: this sucks
+            NoteSpawner.Instance.SpawnNote(nextUp);
             _noteBuffer.Dequeue();
 
             if (_noteBuffer.Count >= 1) {
@@ -74,6 +75,8 @@ public class ChartInterpreter : MonoBehaviour
 
             _noteBuffer.Enqueue(nextNote);
 
+            /* Ignore this part for now
+
             // add hold note children to queue
             if (nextNote.t == 1) {
                 // I'm allowing the children of hold notes to exceed the buffer length. This might break things lmao.
@@ -83,6 +86,7 @@ public class ChartInterpreter : MonoBehaviour
                     _noteBuffer.Enqueue(kid);
                 }
             } 
+            */
 
             _nextNoteIndex++;
         }
@@ -152,4 +156,25 @@ public class NoteChild
 {
     public float b; 
     public int h;
+}
+
+public enum ENoteType
+{
+    normal = 0, 
+    hold = 1, 
+    flick = 2, 
+    hidden = 3
+}
+public enum ELane
+{
+    left = 0, 
+    right = 1, 
+    all = 2
+}
+
+public enum EHighway
+{
+    left = 0,
+    center = 1,
+    right = 2
 }

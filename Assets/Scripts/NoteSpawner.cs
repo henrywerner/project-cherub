@@ -6,9 +6,17 @@ public class NoteSpawner : MonoBehaviour
 {
     public static NoteSpawner Instance { get; private set; }
 
+    [Header("Notes")]
     [SerializeField] private GameObject _LeftNote;
     [SerializeField] private GameObject _RightNote;
     [SerializeField] private GameObject _MultiNote;
+    [SerializeField] private GameObject _LeftNoteHold;
+    [SerializeField] private GameObject _RightNoteHold;
+    [SerializeField] private GameObject _MultiNoteHold;
+    [SerializeField] private GameObject _LeftNoteFlick;
+    [SerializeField] private GameObject _RightNoteFlick;
+    [SerializeField] private GameObject _MultiNoteFlick;
+    [SerializeField] private GameObject _HiddenNote;
 
     [Header("Center Highway")]
     [SerializeField] private GameObject _centerHwBlueSpawnpoint;
@@ -33,7 +41,6 @@ public class NoteSpawner : MonoBehaviour
     private GameObject[] _redSpawnpoints = new GameObject[3];
     private GameObject[] _purpleSpawnpoints = new GameObject[3];
     private GameObject[] _noteParents = new GameObject[3];
-
 
     private int _nextNoteId = 0;
 
@@ -67,51 +74,48 @@ public class NoteSpawner : MonoBehaviour
         _noteParents[2] = _rightHwNoteParent;
     }
 
+    /*
     public void Update()
     {
         if (Input.GetKeyDown("i"))
         {
             // Debug.Log("Spawning left note.");
-            SpawnNote(1, 0, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration, 0);
+            SpawnTapNote(1, 0, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration, 0);
         }
         if (Input.GetKeyDown("o"))
         {
             // Debug.Log("Spawning right note.");
-            SpawnNote(1, 1, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration, 0);
+            SpawnTapNote(1, 1, Conductor.Instance.dspSongTime + Conductor.Instance.highwayTripDuration, 0);
         }
     }
+    */
 
-    public void SpawnNote(int highway, int color, float timing, int type)
+    public void SpawnNote(Note note)
     {
-        // type - normal, hold, swipe, etc.
-        // side - L, R
+        float beat  = note.b;
+        ELane lane = (ELane)note.l;
+        ENoteType type = (ENoteType)note.t;
+        int highway = note.h;
+        int children = note?.c ?? 0;
+        NoteChild[] childrenArr = note?.e ?? new NoteChild[0];
 
-        GameObject noteObj;
+        GameObject noteObj = GetNotePrefab(lane, type);
         Transform spawnPointTrans;
-        Transform noteParentTrans;
+        Transform noteParentTrans = _noteParents[highway].transform;
 
         // it's throwing an error if I don't give them a default value.
-        noteObj = _LeftNote;
         spawnPointTrans = _centerHwBlueSpawnpoint.transform;
-        noteParentTrans = _centerHwNoteParent.transform;
 
-        switch (color)
+        switch (lane)
         {
-            case 0: // blue
-                noteObj = _LeftNote;
+            case ELane.left: // blue
                 spawnPointTrans = _blueSpawnpoints[highway].transform;
-                noteParentTrans = _noteParents[highway].transform;
                 break;
-            case 1: // red
-                noteObj = _RightNote;
+            case ELane.right: // red
                 spawnPointTrans = _redSpawnpoints[highway].transform;
-                noteParentTrans = _noteParents[highway].transform;
                 break;
-            case 2: // multi
-                // TODO: add multi-notes
-                noteObj = _MultiNote;
+            case ELane.all: // multi
                 spawnPointTrans = _purpleSpawnpoints[highway].transform;
-                noteParentTrans = _noteParents[highway].transform;
                 break;
             default: 
                 // unexpected?
@@ -119,9 +123,64 @@ public class NoteSpawner : MonoBehaviour
         }
 
         GameObject newNote = Instantiate(noteObj, spawnPointTrans.position, noteParentTrans.rotation, noteParentTrans);
-        NoteBase nb = newNote.GetComponent<NoteBase>();
-        nb.NoteID = _nextNoteId;
-        nb.NoteTiming = timing;
+        
+        if (type == ENoteType.hold)
+        {
+            if (children == 0 || childrenArr.Length == 0)
+            {
+                // Throw an error if the hold doesn't have any children
+                Debug.Log("Errrrmmmmmm What the fuck??");
+                return;
+            }
+
+            NoteHold nh = newNote.GetComponent<NoteHold>();
+            nh.NoteTiming = beat;
+            nh.NoteID = _nextNoteId;
+            nh.SetChildren(childrenArr);
+        }
+        else {
+            NoteBase nb = newNote.GetComponent<NoteBase>();
+            nb.NoteTiming = beat;
+            nb.NoteID = _nextNoteId;
+        }
+        
         _nextNoteId++;
+    }
+
+    private GameObject GetNotePrefab(ELane lane, ENoteType type)
+    {
+        switch (type)
+        {
+            case ENoteType.normal:
+                if (lane == ELane.left) 
+                    return _LeftNote;
+                else if (lane == ELane.right)
+                    return _RightNote;
+                else if (lane == ELane.all)
+                    return _MultiNote;
+                break;
+            case ENoteType.hold:
+                if (lane == ELane.left) 
+                    return _LeftNoteHold;
+                else if (lane == ELane.right)
+                    return _RightNoteHold;
+                else if (lane == ELane.all)
+                    return _MultiNoteHold;
+                break;
+            case ENoteType.flick:
+                if (lane == ELane.left) 
+                    return _LeftNoteFlick;
+                else if (lane == ELane.right)
+                    return _RightNoteFlick;
+                else if (lane == ELane.all)
+                    return _MultiNoteFlick;
+                break;
+            case ENoteType.hidden:
+                return _HiddenNote;
+            default:
+                break;
+        }
+
+        return null; // just in case
     }
 }

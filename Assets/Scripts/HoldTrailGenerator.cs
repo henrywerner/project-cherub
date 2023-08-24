@@ -15,7 +15,7 @@ public class HoldTrailGenerator : MonoBehaviour
     // yes, impactPoint is somewhat redundant since it's just at [0,0].
 
     public float tailLength;
-    public float tailWidth;
+    private float tailWidth = 1;
 
     private List<Vector3> verticesList;
     private List<int> trianglesList;
