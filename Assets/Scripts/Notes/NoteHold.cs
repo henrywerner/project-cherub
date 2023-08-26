@@ -10,10 +10,6 @@ public class NoteHold : NoteBase
 
     private bool _isCurrentlyHeld = false;
 
-    public NoteHold(int noteID, float noteTiming) : base(noteID, noteTiming)
-    {
-    }
-
     public void SetChildren(NoteChild[] children)
     {
         _children = children;

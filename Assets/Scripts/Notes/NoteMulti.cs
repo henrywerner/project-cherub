@@ -8,10 +8,6 @@ public class NoteMulti : NoteBase
     private bool _isHitLeft, _isHitRight;
     private float _hitTimeLeft, _hitTimeRight;
 
-    public NoteMulti(int noteID, float noteTiming) : base(noteID, noteTiming)
-    {
-    }
-
     protected override void HitAction(int lane) 
     {
         if (lane == 0 && !_isHitLeft) {

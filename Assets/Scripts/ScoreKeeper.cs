@@ -22,13 +22,13 @@ public class ScoreKeeper : MonoBehaviour
             return TotalNotes / (float)NotesHit;
         }
     }
-    public int SongScore { get; private set; } //TODO: add scoring
+    public float SongScore { get; private set; } //TODO: add scoring
     public bool IsFullCombo => !(NotesMissed > 0);
 
     // there's definitely a better way
     private Queue<NoteLog> _noteHistory = new Queue<NoteLog>();
 
-
+    private const int POINT_BASE_VALUE = 100;
 
 
     private void Awake() {
@@ -62,48 +62,56 @@ public class ScoreKeeper : MonoBehaviour
         float timingDeltaInBeats = Mathf.Abs(hitTiming - noteTiming);
         float timingDelta = timingDeltaInBeats / Conductor.Instance.beatsPerSec;
         // Debug.Log("note | timing delta: " + timingDelta);
+        
+        float pointsMultiplier = 0f;
 
         switch (timingDelta) {
             case float d when d <= FRAME_DURATION * 1f:
                 // super secret ultra perfect
-                currentNote.Judgement = 5;
+                currentNote.Judgement = ERating.PERFECTPLUS;
+                pointsMultiplier = 1.05f;
                 PerfectPlusHits++;
                 break;
             case float d when d <= FRAME_DURATION * 3f:
                 // perfect
-                currentNote.Judgement = 4;
+                currentNote.Judgement = ERating.PERFECT;
+                pointsMultiplier = 1f;
                 PerfectHits++;
                 break;
             case float d when d <= FRAME_DURATION * 5f:
                 // great
-                currentNote.Judgement = 3;
+                currentNote.Judgement = ERating.GREAT;
+                pointsMultiplier = 0.9f;
                 GreatHits++;
                 break;
             case float d when d <= FRAME_DURATION * 9f:
                 // good
-                currentNote.Judgement = 2;
+                currentNote.Judgement = ERating.GOOD;
+                pointsMultiplier = 0.75f;
                 GoodHits++;
                 break;
             case float d when d <= FRAME_DURATION * 14f:
                 // okay
-                currentNote.Judgement = 1;
+                currentNote.Judgement = ERating.OKAY;
+                pointsMultiplier = 0.5f;
                 OkayHits++;
                 break;
             default:
                 // miss
-                currentNote.Judgement = 0;
+                currentNote.Judgement = ERating.MISS;
                 break;
         }
 
         // Update stats
-        if (currentNote.Judgement > 0) {
-            NotesHit++;
-        } else {
+        if (currentNote.Judgement == ERating.MISS) {
             NotesMissed++;
+        } else {
+            NotesHit++;
+            SongScore += POINT_BASE_VALUE * pointsMultiplier;
         }
 
         // Display judgment hud action
-        UIEvents.current.ShowJudgement(currentNote.Judgement);
+        UIEvents.current.ShowJudgement((int)currentNote.Judgement);
 
         // Add to note history
         _noteHistory.Enqueue(currentNote);
@@ -114,10 +122,20 @@ public class NoteLog
 {
     public int NoteID;
     public float Beat;
-    public int Judgement;
+    public ERating Judgement;
 
     public NoteLog(int noteID, float beat) {
         NoteID = noteID;
         Beat = beat;
     }
+}
+
+public enum ERating
+{
+    MISS = 0,
+    OKAY = 1,
+    GOOD = 2,
+    GREAT = 3,
+    PERFECT = 4,
+    PERFECTPLUS = 5
 }

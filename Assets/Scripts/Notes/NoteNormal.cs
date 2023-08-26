@@ -4,7 +4,5 @@ using UnityEngine;
 
 public class NoteNormal : NoteBase
 {
-    public NoteNormal(int noteID, float noteTiming) : base(noteID, noteTiming)
-    {
-    }
+    
 }

@@ -9,14 +9,8 @@ public abstract class NoteBase : MonoBehaviour, INote
     protected float _NoteSpeed;
     public int NoteID;
     public float NoteTiming;
+    public int NoteLane;
     public bool IsInRange = false;
-
-    // this WILL NOT WORK
-    protected NoteBase(int noteID, float noteTiming)
-    {
-        NoteID = noteID;
-        NoteTiming = noteTiming;
-    }
 
     private void Awake()
     {

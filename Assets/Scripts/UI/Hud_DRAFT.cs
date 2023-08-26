@@ -7,6 +7,12 @@ public class Hud_DRAFT : MonoBehaviour
 {
     private ScoreKeeper m_scoreKeeper;
 
+    [Header("Scoring")]
+    public TMP_Text scoreText;
+    public TMP_Text accuracyText;
+    public TMP_Text comboText;
+    public TMP_Text multiplierText;
+
     [Header("Time Displays")]
     public TMP_Text beatCounter;
     public TMP_Text timer;
@@ -55,8 +61,12 @@ public class Hud_DRAFT : MonoBehaviour
         goodCounterText.text = "GOOD: " + m_scoreKeeper.GoodHits;
         okayCounterText.text = "OKAY: " + m_scoreKeeper.OkayHits;
         missCounterText.text = "MISS: " + m_scoreKeeper.NotesMissed;
+
         fcText.text = "FC: " + m_scoreKeeper.IsFullCombo;
         fcText.color = m_scoreKeeper.IsFullCombo ? Color.yellow : Color.white;
+
+        scoreText.text = "SCORE: " + m_scoreKeeper.SongScore;
+        accuracyText.text = "Acc: " + m_scoreKeeper.SongAccuracy;
     }
 
     private void DisplayJudgementText(int rating) {

@@ -27,6 +27,7 @@ public class JudgementLine : MonoBehaviour
     }
 
     // laneID - tells the note which lane it was hit from
+    // TODO: remove the transform parameter and just use the laneID to determine left or right
     private void Tap(Transform t, int laneID) {
         // Using raycasts is such a 200iq move
         RaycastHit hit;
@@ -51,6 +52,34 @@ public class JudgementLine : MonoBehaviour
         else
         {
             DrawFunnyRaycast(Color.red, "Note missed");
+        }
+    }
+
+    // using direction as a bool is stupid, but I don't care.
+    // left: 0, right: 1.
+    private void Swipe(int direction)
+    {
+        // fire a raycast that only hits swipe notes
+        RaycastHit leftHit, rightHit;
+
+        Ray leftRay = new Ray(GunLeft.position, GunLeft.TransformDirection(Vector3.forward));
+        Ray rightRay = new Ray(GunRight.position, GunRight.TransformDirection(Vector3.forward));
+
+        // fire Left raycast
+        if (Physics.Raycast(leftRay, out leftHit, maxRaycastDistance, targetLayer))
+        {
+            NoteFlick noteFlick = leftHit.collider.gameObject.GetComponent<NoteFlick>();
+
+            if ((bool)(noteFlick?.GetInRange()))
+            {
+                noteFlick.Flick((EFlickDirection)direction);
+            }
+        }
+
+        // fire Right raycast
+        if (Physics.Raycast(rightRay, out rightHit, maxRaycastDistance, targetLayer))
+        {
+
         }
     }
 }

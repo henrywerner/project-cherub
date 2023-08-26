@@ -136,12 +136,14 @@ public class NoteSpawner : MonoBehaviour
             NoteHold nh = newNote.GetComponent<NoteHold>();
             nh.NoteTiming = beat;
             nh.NoteID = _nextNoteId;
+            nh.NoteLane = (int)lane;
             nh.SetChildren(childrenArr);
         }
         else {
             NoteBase nb = newNote.GetComponent<NoteBase>();
             nb.NoteTiming = beat;
             nb.NoteID = _nextNoteId;
+            nb.NoteLane = (int)lane;
         }
         
         _nextNoteId++;
