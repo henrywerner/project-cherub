@@ -12,10 +12,12 @@ public class LaneStateLeft : HighwaySelectedState
         if (leftPressed == rightPressed) {
             // neutral
             _highwayFsm.ChangeState(_highwayFsm.neutralState);
+            _judgementLine.Swipe(EFlickDirection.Right);
         }
         else if (rightPressed) {
             // right
             _highwayFsm.ChangeState(_highwayFsm.rightState);
+            _judgementLine.Swipe(EFlickDirection.Right);
         }
     }
 }

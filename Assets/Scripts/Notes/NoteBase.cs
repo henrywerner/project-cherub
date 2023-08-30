@@ -93,7 +93,7 @@ public abstract class NoteBase : MonoBehaviour, INote
     {
         if (_missParticles != null)
         {
-            _missParticles = Instantiate(_hitParticles, transform.position, Quaternion.identity);
+            _missParticles = Instantiate(_missParticles, transform.position, Quaternion.identity);
             _missParticles.gameObject.SetActive(true);
         }
     }

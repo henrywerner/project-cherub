@@ -98,6 +98,7 @@ public class NoteSpawner : MonoBehaviour
         int highway = note.h;
         int children = note?.c ?? 0;
         NoteChild[] childrenArr = note?.e ?? new NoteChild[0];
+        int flickDir = note?.f ?? 0;
 
         GameObject noteObj = GetNotePrefab(lane, type);
         Transform spawnPointTrans;
@@ -138,6 +139,20 @@ public class NoteSpawner : MonoBehaviour
             nh.NoteID = _nextNoteId;
             nh.NoteLane = (int)lane;
             nh.SetChildren(childrenArr);
+        }
+        else if (type == ENoteType.flick) 
+        {
+            if (!(flickDir == 1 || flickDir == -1)) {
+                // if the direction is not one of the two valid values
+                Debug.Log("Note had invalid flick direction. This shouldn't happen.");
+                return;
+            }
+
+            NoteFlick nf = newNote.GetComponent<NoteFlick>();
+            nf.NoteTiming = beat;
+            nf.NoteID = _nextNoteId;
+            nf.NoteLane = (int)lane;
+            nf.FlickDirection = (EFlickDirection)flickDir;
         }
         else {
             NoteBase nb = newNote.GetComponent<NoteBase>();

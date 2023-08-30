@@ -55,9 +55,7 @@ public class JudgementLine : MonoBehaviour
         }
     }
 
-    // using direction as a bool is stupid, but I don't care.
-    // left: 0, right: 1.
-    private void Swipe(int direction)
+    public void Swipe(EFlickDirection direction)
     {
         // fire a raycast that only hits swipe notes
         RaycastHit leftHit, rightHit;
@@ -70,16 +68,29 @@ public class JudgementLine : MonoBehaviour
         {
             NoteFlick noteFlick = leftHit.collider.gameObject.GetComponent<NoteFlick>();
 
-            if ((bool)(noteFlick?.GetInRange()))
+            // TODO: rewrite this to not be as lame
+            if (noteFlick != null)
             {
-                noteFlick.Flick((EFlickDirection)direction);
+                if ((bool)(noteFlick?.GetInRange()))
+                {
+                    noteFlick.Flick(direction);
+                }
             }
+
         }
 
         // fire Right raycast
         if (Physics.Raycast(rightRay, out rightHit, maxRaycastDistance, targetLayer))
         {
+            NoteFlick noteFlick = rightHit.collider.gameObject.GetComponent<NoteFlick>();
 
+            if (noteFlick != null)
+            {
+                if ((bool)(noteFlick?.GetInRange()))
+                {
+                    noteFlick.Flick(direction);
+                }
+            }
         }
     }
 }

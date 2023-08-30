@@ -136,6 +136,9 @@ public class Note
     // TYPE - Note type - 0: normal, 1: hold, 2: hidden
     public int t;
 
+    // FLICK - (IF FLICK NOTE) Direction of the flick - Left: -1, Right: 1
+    public int f;
+
     // CHILDREN - (IF HOLD NOTE) How many children does the hold have
     public int c;
 
