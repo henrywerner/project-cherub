@@ -58,7 +58,8 @@ public class Conductor : MonoBehaviour
         noteSpeed *= noteSpeedModifier * highwayLength; // note speed in Highways Per Second
         noteSpeed *= secPerBeat; // convert to Highways per Beat (H/b)
 
-        firstBeatOffset = highwayTripDuration;
+        // firstBeatOffset = highwayTripDuration;
+        firstBeatOffset = 0;
     }
 
     void Start()
@@ -76,16 +77,9 @@ public class Conductor : MonoBehaviour
         yield return new WaitForSecondsRealtime(additionRtDelay);
 
         dspSongTime = (float)AudioSettings.dspTime; // record the time when the music starts
-        _musicSource.mute = true; // mute it at first
-        _musicSource.Play();
-
+        double startTime = AudioSettings.dspTime + highwayTripDuration;
+        _musicSource.PlayScheduled(startTime); // apparently .play() can introduce up to 0.5s on some devices? 
         _isSongStarted = true; // start counting the beats in
-
-        // FIXME: THIS SOLUTION SUCKS!!! THERE NEEDS TO BE A BETTER WAY!!!
-        yield return new WaitForSecondsRealtime(highwayTripDuration);
-
-        _musicSource.mute = false; // un-mute it
-        _musicSource.Play(); // restart the track?
     }
 
     void Update()
@@ -102,7 +96,8 @@ public class Conductor : MonoBehaviour
 
         //determine how many seconds since the song started
         //(also account for first beat offset)
-        songPosition = (float)(AudioSettings.dspTime - dspSongTime - firstBeatOffset);
+        //(also account for initial highway travel time, otherwise everything will spawn at zero)
+        songPosition = (float)(AudioSettings.dspTime - dspSongTime - firstBeatOffset - highwayTripDuration);
 
         //determine how many beats since the song started
         songPositionInBeats = songPosition / secPerBeat;
