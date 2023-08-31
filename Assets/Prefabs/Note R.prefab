@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rb: {fileID: -6342424494941607228}
-  _hitParticles: {fileID: 8686819687860360528, guid: efb02256c16d18542b726cfcbb78ed64, type: 3}
+  _hitParticles: {fileID: 3085189536646383495, guid: 97a432656d61aed468931cb3ad20696f, type: 3}
   _missParticles: {fileID: 8686819687860360528, guid: 7e2b8022dc6f770428c599c07cf6a4d5, type: 3}
   NoteID: 0
   NoteTiming: 0

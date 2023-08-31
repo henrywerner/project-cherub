@@ -22,6 +22,8 @@ public abstract class NoteBase : MonoBehaviour, INote
 
     private void Update()
     {
+        if (!gameObject.activeSelf) return;
+
         Movement(_rb);
     }
 
