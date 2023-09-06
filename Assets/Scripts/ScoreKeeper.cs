@@ -23,6 +23,7 @@ public class ScoreKeeper : MonoBehaviour
         }
     }
     public float SongScore { get; private set; } //TODO: add scoring
+    public int CurrentCombo { get; private set; }
     public bool IsFullCombo => !(NotesMissed > 0);
 
     // there's definitely a better way
@@ -43,6 +44,7 @@ public class ScoreKeeper : MonoBehaviour
         NotesHit = 0;
         NotesMissed = 0;
         SongScore = 0;
+        CurrentCombo = 0;
         PerfectPlusHits = 0;
         PerfectHits = 0;
         GreatHits = 0;
@@ -56,6 +58,8 @@ public class ScoreKeeper : MonoBehaviour
         // hitTiming - the time code that the hit was recorded
 
         const float FRAME_DURATION = 0.0167f; // millisecond duration of a frame @ 60fps
+
+        hitTiming -= PlayerOptions.Instance.InputOffset; // Adjust hit timing based on the player's InputOffset
 
         NoteLog currentNote = new NoteLog(noteID, noteTiming);
 
@@ -105,13 +109,16 @@ public class ScoreKeeper : MonoBehaviour
         // Update stats
         if (currentNote.Judgement == ERating.MISS) {
             NotesMissed++;
+            CurrentCombo = 0;
         } else {
             NotesHit++;
             SongScore += POINT_BASE_VALUE * pointsMultiplier;
+            CurrentCombo++;
         }
 
         // Display judgment hud action
         UIEvents.current.ShowJudgement((int)currentNote.Judgement);
+        UIEvents.current.UpdateCombo(CurrentCombo);
 
         // Add to note history
         _noteHistory.Enqueue(currentNote);

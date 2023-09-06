@@ -57,13 +57,14 @@ public class Conductor : MonoBehaviour
         highwayLength = HIGHWAY_TRUE_LENGTH * highwayLengthModifier;
         noteSpeed *= noteSpeedModifier * highwayLength; // note speed in Highways Per Second
         noteSpeed *= secPerBeat; // convert to Highways per Beat (H/b)
-
-        // firstBeatOffset = highwayTripDuration;
-        firstBeatOffset = 0;
     }
 
     void Start()
     {
+        // Offset the first beat based on the chart settings AND the player's AudioOffset
+        // (This is done in Start because rn the Player Options are loaded on Awake.)
+        firstBeatOffset = PlayerOptions.Instance.AudioOffset;
+
         // Load the AudioSource attached to the Conductor GameObject
         _musicSource = GetComponent<AudioSource>();
 

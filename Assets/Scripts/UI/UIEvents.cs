@@ -32,4 +32,10 @@ public class UIEvents : MonoBehaviour
     public void ShowJudgement(int rating) {
         OnShowJudgement?.Invoke(rating);
     }
+
+    public event Action<int> OnUpdateCombo;
+
+    public void UpdateCombo(int combo) {
+        OnUpdateCombo?.Invoke(combo);
+    }
 }
