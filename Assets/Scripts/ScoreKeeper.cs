@@ -5,6 +5,19 @@ using UnityEngine;
 public class ScoreKeeper : MonoBehaviour
 {
     public static ScoreKeeper Instance { get; private set; }
+    private const int POINT_BASE_VALUE = 100;
+
+    [SerializeField] private float _NOTE_VALUE_PERFECTPLUS = 1.05f;
+    [SerializeField] private float _NOTE_VALUE_PERFECT = 1f;
+    [SerializeField] private float _NOTE_VALUE_GREAT = 0.9f;
+    [SerializeField] private float _NOTE_VALUE_GOOD = 0.75f;
+    [SerializeField] private float _NOTE_VALUE_OKAY = 0.5f;
+
+
+
+    /// <summary>
+    /// NOTE COUNTERS
+    /// </summary>
     public int TotalNotes { get; private set; }
     public int NotesMissed { get; private set; }
     public int NotesHit { get; private set; }
@@ -13,6 +26,11 @@ public class ScoreKeeper : MonoBehaviour
     public int GreatHits { get; private set; }
     public int GoodHits { get; private set; }
     public int OkayHits { get; private set; }
+    private Queue<NoteLog> _noteHistory = new Queue<NoteLog>(); // there's definitely a better way
+
+    /// <summary>
+    /// SCORING
+    /// </summary>
     public float SongAccuracy {
         get {
             if (TotalNotes == 0)
@@ -23,14 +41,15 @@ public class ScoreKeeper : MonoBehaviour
         }
     }
     public float SongScore { get; private set; } //TODO: add scoring
+
+    /// <summary>
+    /// COMBO TRACKING
+    /// </summary>
     public int CurrentCombo { get; private set; }
     public bool IsFullCombo => !(NotesMissed > 0);
-
-    // there's definitely a better way
-    private Queue<NoteLog> _noteHistory = new Queue<NoteLog>();
-
-    private const int POINT_BASE_VALUE = 100;
-
+    private int CurrentMultiplierState; // multiplier bonus will use 2^(this var)
+    private Dictionary<ERating, int> _adjustedNoteValues;
+    
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -45,11 +64,21 @@ public class ScoreKeeper : MonoBehaviour
         NotesMissed = 0;
         SongScore = 0;
         CurrentCombo = 0;
+        CurrentMultiplierState = 0;
         PerfectPlusHits = 0;
         PerfectHits = 0;
         GreatHits = 0;
         GoodHits = 0;
         OkayHits = 0;
+
+        _adjustedNoteValues = new Dictionary<ERating, int>
+        {
+            { ERating.PERFECTPLUS, (int)(POINT_BASE_VALUE * _NOTE_VALUE_PERFECTPLUS) },
+            { ERating.PERFECT, (int)(POINT_BASE_VALUE * _NOTE_VALUE_PERFECT) },
+            { ERating.GREAT, (int)(POINT_BASE_VALUE * _NOTE_VALUE_GREAT) },
+            { ERating.GOOD, (int)(POINT_BASE_VALUE * _NOTE_VALUE_GOOD) },
+            { ERating.OKAY, (int)(POINT_BASE_VALUE * _NOTE_VALUE_OKAY) }
+        };
     }
 
     public void JudgeNote(int noteID, float noteTiming, float hitTiming) {
@@ -67,52 +96,55 @@ public class ScoreKeeper : MonoBehaviour
         float timingDelta = timingDeltaInBeats / Conductor.Instance.beatsPerSec;
         // Debug.Log("note | timing delta: " + timingDelta);
         
-        float pointsMultiplier = 0f;
+        float notePointsMultiplier = 0f;
 
         switch (timingDelta) {
             case float d when d <= FRAME_DURATION * 1f:
                 // super secret ultra perfect
                 currentNote.Judgement = ERating.PERFECTPLUS;
-                pointsMultiplier = 1.05f;
+                notePointsMultiplier = _NOTE_VALUE_PERFECTPLUS;
                 PerfectPlusHits++;
                 break;
             case float d when d <= FRAME_DURATION * 3f:
                 // perfect
                 currentNote.Judgement = ERating.PERFECT;
-                pointsMultiplier = 1f;
+                notePointsMultiplier = _NOTE_VALUE_PERFECT;
                 PerfectHits++;
                 break;
             case float d when d <= FRAME_DURATION * 5f:
                 // great
                 currentNote.Judgement = ERating.GREAT;
-                pointsMultiplier = 0.9f;
+                notePointsMultiplier = _NOTE_VALUE_GREAT;
                 GreatHits++;
                 break;
             case float d when d <= FRAME_DURATION * 9f:
                 // good
                 currentNote.Judgement = ERating.GOOD;
-                pointsMultiplier = 0.75f;
+                notePointsMultiplier = _NOTE_VALUE_GOOD;
                 GoodHits++;
                 break;
             case float d when d <= FRAME_DURATION * 14f:
                 // okay
                 currentNote.Judgement = ERating.OKAY;
-                pointsMultiplier = 0.5f;
+                notePointsMultiplier = _NOTE_VALUE_OKAY;
                 OkayHits++;
                 break;
             default:
                 // miss
                 currentNote.Judgement = ERating.MISS;
+                NotesMissed++;
                 break;
         }
 
-        // Update stats
+        // Update combo
         if (currentNote.Judgement == ERating.MISS) {
-            NotesMissed++;
-            CurrentCombo = 0;
+            CurrentCombo = 0; // Reset combo
+            if (CurrentMultiplierState != 0) { // Reduce combo multiplier
+                CurrentMultiplierState--;
+            }
         } else {
             NotesHit++;
-            SongScore += POINT_BASE_VALUE * pointsMultiplier;
+            SongScore += POINT_BASE_VALUE * notePointsMultiplier * Mathf.Pow(2, CurrentMultiplierState);
             CurrentCombo++;
         }
 
@@ -122,6 +154,18 @@ public class ScoreKeeper : MonoBehaviour
 
         // Add to note history
         _noteHistory.Enqueue(currentNote);
+    }
+
+    private void UpdateComboMultiplier(ERating hit) {
+        if (hit == ERating.MISS) {
+            if (CurrentMultiplierState > 0) {
+                CurrentMultiplierState--;
+            }
+            return;
+        }
+
+        
+
     }
 }
 
